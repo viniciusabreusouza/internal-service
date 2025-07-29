@@ -3,6 +3,7 @@ package di
 import (
 	"context"
 
+	"example.com/internal-service/internal/infra/grpc"
 	http "example.com/internal-service/internal/infra/http"
 	"go.uber.org/zap"
 )
@@ -41,4 +42,8 @@ func ProvideLogger() (*zap.Logger, error) {
 
 func ProvideHTTPServer(log *zap.Logger) (http.Server, error) {
 	return http.NewHTTPServer(log)
+}
+
+func ProvideGRPCServer(log *zap.Logger) (grpc.Server, error) {
+	return grpc.NewGRPCServer(log)
 }

@@ -3,6 +3,7 @@ package di
 import (
 	"context"
 
+	"example.com/internal-service/internal/infra/grpc"
 	http "example.com/internal-service/internal/infra/http"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
@@ -13,6 +14,7 @@ type Application struct {
 	cancel     context.CancelFunc
 	log        *zap.Logger
 	httpServer http.Server
+	grpcServer grpc.Server
 }
 
 // GetLogger retorna o logger da aplicação
@@ -20,7 +22,7 @@ func (a Application) GetLogger() *zap.Logger {
 	return a.log
 }
 
-func NewApplication(ctx context.Context, log *zap.Logger, server http.Server) Application {
+func NewApplication(ctx context.Context, log *zap.Logger, server http.Server, grpcServer grpc.Server) Application {
 	ctx, cancel := context.WithCancel(ctx)
 
 	return Application{
@@ -28,6 +30,7 @@ func NewApplication(ctx context.Context, log *zap.Logger, server http.Server) Ap
 		cancel:     cancel,
 		log:        log,
 		httpServer: server,
+		grpcServer: grpcServer,
 	}
 }
 
@@ -41,6 +44,10 @@ func (app Application) Run() error {
 
 	errGroup.Go(func() error {
 		return app.httpServer.Run(ctx)
+	})
+
+	errGroup.Go(func() error {
+		return app.grpcServer.Run(ctx)
 	})
 
 	app.log.Info("Application started")
@@ -57,6 +64,12 @@ func (app Application) ShutdownAndCleanup() {
 	if app.httpServer != nil {
 		if err := app.httpServer.Stop(context.Background()); err != nil {
 			log.Error("Failed to shutdown HTTP server", zap.Error(err))
+		}
+	}
+
+	if app.grpcServer != nil {
+		if err := app.grpcServer.Stop(context.Background()); err != nil {
+			log.Error("Failed to shutdown GRPC server", zap.Error(err))
 		}
 	}
 }

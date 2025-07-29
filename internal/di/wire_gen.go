@@ -18,6 +18,10 @@ func SetupApplication() (Application, error) {
 	if err != nil {
 		return Application{}, err
 	}
-	application := NewApplication(context, logger, server)
+	grpcServer, err := ProvideGRPCServer(logger)
+	if err != nil {
+		return Application{}, err
+	}
+	application := NewApplication(context, logger, server, grpcServer)
 	return application, nil
 }

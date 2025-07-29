@@ -15,6 +15,7 @@ func SetupApplication() (Application, error) {
 			ProvideContext,
 			ProvideLogger,
 			ProvideHTTPServer,
+			ProvideGRPCServer,
 			NewApplication,
 		),
 	)
