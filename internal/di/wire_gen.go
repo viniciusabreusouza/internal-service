@@ -20,7 +20,8 @@ func SetupApplication() (Application, error) {
 	if err != nil {
 		return Application{}, err
 	}
-	grpcServer, err := ProvideGRPCServer(logger, userService)
+	serviceHandlers := ProvideServiceHandlers(userService)
+	grpcServer, err := ProvideGRPCServer(logger, serviceHandlers)
 	if err != nil {
 		return Application{}, err
 	}

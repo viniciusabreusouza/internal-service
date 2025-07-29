@@ -16,6 +16,7 @@ func SetupApplication() (Application, error) {
 			ProvideLogger,
 			ProvideUserRepository,
 			ProvideUserService,
+			ProvideServiceHandlers,
 			ProvideHTTPServer,
 			ProvideGRPCServer,
 			NewApplication,

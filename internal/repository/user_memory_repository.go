@@ -49,6 +49,14 @@ func (r *UserMemoryRepository) GetByID(ctx context.Context, id string) (*user.Us
 
 // GetAll retorna todos os usuários com paginação
 func (r *UserMemoryRepository) GetAll(ctx context.Context, page, limit int) ([]*user.User, int, error) {
+	r.users = map[string]*user.User{
+		"1": {
+			ID:    "1",
+			Name:  "John Doe",
+			Email: "john.doe@example.com",
+		},
+	}
+
 	r.mutex.RLock()
 	defer r.mutex.RUnlock()
 

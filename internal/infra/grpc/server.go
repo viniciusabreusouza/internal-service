@@ -23,20 +23,51 @@ type GRPCServer struct {
 	port   int
 }
 
-func NewGRPCServer(log *zap.Logger, userService service.UserService) (*GRPCServer, error) {
+// ServiceHandlers define todos os handlers de serviços
+type ServiceHandlers struct {
+	UserService service.UserService
+	// BlogService service.BlogService  // Descomente quando implementar
+	// PostService service.PostService  // Descomente quando implementar
+}
+
+// NewGRPCServer cria uma nova instância do servidor gRPC
+func NewGRPCServer(log *zap.Logger, handlers ServiceHandlers) (*GRPCServer, error) {
 	grpcServer := grpc.NewServer()
 
-	// Registrar serviços
-	userHandler := handler.NewUserGRPCHandler(userService, log)
-	user.RegisterUserServiceServer(grpcServer, userHandler)
+	// Registrar todos os serviços
+	registerServices(grpcServer, handlers, log)
 
 	server := GRPCServer{
 		log:    log,
 		server: grpcServer,
-		port:   9090,
+		port:   50051,
 	}
 
 	return &server, nil
+}
+
+// registerServices registra todos os serviços no servidor gRPC
+func registerServices(grpcServer *grpc.Server, handlers ServiceHandlers, log *zap.Logger) {
+	// Registrar UserService
+	if handlers.UserService != nil {
+		userHandler := handler.NewUserGRPCHandler(handlers.UserService, log)
+		user.RegisterUserServiceServer(grpcServer, userHandler)
+		log.Info("UserService registered")
+	}
+
+	// Registrar BlogService (quando implementar)
+	// if handlers.BlogService != nil {
+	//     blogHandler := handler.NewBlogGRPCHandler(handlers.BlogService, log)
+	//     blog.RegisterBlogServiceServer(grpcServer, blogHandler)
+	//     log.Info("BlogService registered")
+	// }
+
+	// Registrar PostService (quando implementar)
+	// if handlers.PostService != nil {
+	//     postHandler := handler.NewPostGRPCHandler(handlers.PostService, log)
+	//     post.RegisterPostServiceServer(grpcServer, postHandler)
+	//     log.Info("PostService registered")
+	// }
 }
 
 func (s *GRPCServer) Run(ctx context.Context) error {

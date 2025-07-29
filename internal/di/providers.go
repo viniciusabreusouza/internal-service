@@ -29,11 +29,20 @@ func ProvideUserService(userRepo repository.UserRepository, log *zap.Logger) ser
 	return service.NewUserService(userRepo, log)
 }
 
+// Provider para ServiceHandlers
+func ProvideServiceHandlers(userService service.UserService) grpc.ServiceHandlers {
+	return grpc.ServiceHandlers{
+		UserService: userService,
+		// BlogService: blogService,  // Adicione quando implementar
+		// PostService: postService,  // Adicione quando implementar
+	}
+}
+
 // Providers para servidores
 func ProvideHTTPServer(log *zap.Logger, userService service.UserService) (http.Server, error) {
 	return http.NewHTTPServer(log, userService)
 }
 
-func ProvideGRPCServer(log *zap.Logger, userService service.UserService) (grpc.Server, error) {
-	return grpc.NewGRPCServer(log, userService)
+func ProvideGRPCServer(log *zap.Logger, handlers grpc.ServiceHandlers) (grpc.Server, error) {
+	return grpc.NewGRPCServer(log, handlers)
 }

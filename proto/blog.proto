@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package blog;
+
+option go_package = "example.com/internal-service/internal/proto/blog";
+
+import "google/protobuf/timestamp.proto";
+
+service BlogService {
+  rpc CreateBlog(CreateBlogRequest) returns (CreateBlogResponse);
+  rpc GetBlog(GetBlogRequest) returns (GetBlogResponse);
+  rpc ListBlogs(ListBlogsRequest) returns (ListBlogsResponse);
+  rpc UpdateBlog(UpdateBlogRequest) returns (UpdateBlogResponse);
+  rpc DeleteBlog(DeleteBlogRequest) returns (DeleteBlogResponse);
+}
+
+message Blog {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+  string author_id = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message CreateBlogRequest {
+  string title = 1;
+  string content = 2;
+  string author_id = 3;
+}
+
+message CreateBlogResponse {
+  Blog blog = 1;
+}
+
+message GetBlogRequest {
+  string id = 1;
+}
+
+message GetBlogResponse {
+  Blog blog = 1;
+}
+
+message ListBlogsRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message ListBlogsResponse {
+  repeated Blog blogs = 1;
+  int32 total = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message UpdateBlogRequest {
+  string id = 1;
+  string title = 2;
+  string content = 3;
+}
+
+message UpdateBlogResponse {
+  Blog blog = 1;
+}
+
+message DeleteBlogRequest {
+  string id = 1;
+}
+
+message DeleteBlogResponse {
+  bool success = 1;
+} 
