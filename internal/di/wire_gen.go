@@ -14,11 +14,13 @@ func SetupApplication() (Application, error) {
 	if err != nil {
 		return Application{}, err
 	}
-	server, err := ProvideHTTPServer(logger)
+	userRepository := ProvideUserRepository()
+	userService := ProvideUserService(userRepository, logger)
+	server, err := ProvideHTTPServer(logger, userService)
 	if err != nil {
 		return Application{}, err
 	}
-	grpcServer, err := ProvideGRPCServer(logger)
+	grpcServer, err := ProvideGRPCServer(logger, userService)
 	if err != nil {
 		return Application{}, err
 	}

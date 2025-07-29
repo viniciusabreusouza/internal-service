@@ -14,6 +14,8 @@ func SetupApplication() (Application, error) {
 		wire.Build(
 			ProvideContext,
 			ProvideLogger,
+			ProvideUserRepository,
+			ProvideUserService,
 			ProvideHTTPServer,
 			ProvideGRPCServer,
 			NewApplication,

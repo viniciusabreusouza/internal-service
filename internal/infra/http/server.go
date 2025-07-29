@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"example.com/internal-service/internal/handler"
+	"example.com/internal-service/internal/service"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -19,12 +20,24 @@ type HTTPServer struct {
 	log    *zap.Logger
 }
 
-func NewHTTPServer(log *zap.Logger) (Server, error) {
+func NewHTTPServer(log *zap.Logger, userService service.UserService) (Server, error) {
 	router := gin.Default()
 
 	router.Use(gin.Recovery())
 
+	// Health check
 	router.GET("/health", handler.HealthCheckHandler)
+
+	// User routes
+	userHandler := handler.NewUserHTTPHandler(userService, log)
+	users := router.Group("/api/v1/users")
+	{
+		users.POST("/", userHandler.CreateUser)
+		users.GET("/", userHandler.ListUsers)
+		users.GET("/:id", userHandler.GetUser)
+		users.PUT("/:id", userHandler.UpdateUser)
+		users.DELETE("/:id", userHandler.DeleteUser)
+	}
 
 	server := HTTPServer{
 		log: log,
