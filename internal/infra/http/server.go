@@ -4,7 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	"example.com/internal-service/internal/config"
 	"example.com/internal-service/internal/handler"
+	"example.com/internal-service/internal/middleware"
 	"example.com/internal-service/internal/service"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -38,6 +40,22 @@ func NewHTTPServer(log *zap.Logger, userService service.UserService) (Server, er
 		users.PUT("/:id", userHandler.UpdateUser)
 		users.DELETE("/:id", userHandler.DeleteUser)
 	}
+
+	// Protected routes
+	authConfig := config.NewAuthConfig()
+	authMiddleware := middleware.NewAuthMiddleware(log, authConfig)
+	protectedHandler := handler.NewProtectedHandler(log)
+	
+	protected := router.Group("/")
+	protected.Use(authMiddleware.JWTAuthMiddleware())
+	{
+		protected.GET("/dados-protegidos", protectedHandler.GetProtectedData)
+	}
+
+	log.Info("Routes configured", 
+		zap.String("health", "/health"),
+		zap.String("protected", "/dados-protegidos"),
+	)
 
 	server := HTTPServer{
 		log: log,

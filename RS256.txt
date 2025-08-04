@@ -1,0 +1,61 @@
+A principal razão pela qual RS256 é mais seguro que HMAC (HS256) em contextos como APIs públicas e integrações com terceiros está na diferença entre criptografia assimétrica e simétrica. Vamos destrinchar isso:
+
+🔐 HS256 (HMAC-SHA256) – Criptografia Simétrica
+✳️ Como funciona:
+Usa a mesma chave secreta (secret) tanto para assinar quanto para validar o token.
+
+⚠️ Problemas de segurança e escalabilidade:
+Distribuição da chave é arriscada
+Você precisa compartilhar o mesmo secret com todos os serviços que precisam validar o token. Se um serviço for comprometido, qualquer um poderá gerar tokens válidos.
+
+Autenticidade não é garantida contra falsificação
+Quem tem a chave pode assinar tokens arbitrários, então não dá para diferenciar se o token foi realmente emitido por quem deveria (ex: Auth0) ou falsificado.
+
+Rotação de chave é dolorosa
+Como todos usam a mesma chave, trocá-la exige atualização em todos os serviços simultaneamente.
+
+🔐 RS256 (RSA-SHA256) – Criptografia Assimétrica
+✳️ Como funciona:
+Usa um par de chaves:
+
+Chave privada para assinar (somente o emissor tem — ex: Auth0)
+
+Chave pública para validar (qualquer um pode ter — ex: sua API)
+
+✅ Vantagens de segurança:
+Separação de responsabilidades
+
+Apenas o Auth0 tem a chave privada → só ele pode gerar tokens válidos.
+
+Sua API só precisa da chave pública → não pode forjar tokens.
+
+Segurança ao expor a API
+Mesmo que sua API ou serviço vaze, ninguém poderá criar tokens falsos, porque não têm acesso à chave privada.
+
+Rotação facilitada e segura
+O Auth0 pode rotacionar as chaves e expor isso no JWKS endpoint (/.well-known/jwks.json) — sua API só precisa buscar a nova chave pública, sem nenhum segredo envolvido.
+
+Escalabilidade em ambientes distribuídos
+Várias APIs e serviços podem validar o mesmo token com a chave pública, sem nunca compartilhar segredos.
+
+🧠 Resumo comparativo
+Critério	HS256 (HMAC)	RS256 (RSA)
+Tipo de chave	Simétrica	Assimétrica
+Quem pode assinar	Qualquer um com o secret	Apenas quem tem a privada
+Quem pode validar	Quem tem o secret	Qualquer um com a pública
+Risco de vazamento	Alto	Baixo
+Escalabilidade	Difícil	Alta
+Segurança geral	Média	Alta
+
+🧩 Quando usar RS256?
+Sempre que:
+
+Você está emitindo tokens de forma centralizada (como via Auth0).
+
+O token será consumido por vários serviços diferentes.
+
+Você quer evitar o compartilhamento de segredo.
+
+➡️ Esse é exatamente o seu caso, e por isso o Auth0 recomenda RS256 por padrão.
+
+Se quiser, posso te mostrar um exemplo de como alguém poderia explorar uma má configuração com HS256, só para ilustrar o risco. Deseja ver isso?
