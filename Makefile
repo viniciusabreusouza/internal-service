@@ -1,0 +1,114 @@
+.PHONY: test test-unit test-integration test-all build clean
+
+# Comandos de teste
+test: test-unit test-integration
+
+test-unit:
+	@echo "Executando testes unitários..."
+	go test -v ./internal/repository -tags=unit
+
+test-unit-fresh:
+	@echo "Executando testes unitários (sem cache)..."
+	go clean -testcache
+	go test -v ./internal/repository -tags=unit
+
+test-integration:
+	@echo "Executando testes de integração..."
+	go test -v ./internal/repository -tags=integration
+
+test-integration-fresh:
+	@echo "Executando testes de integração (sem cache)..."
+	go clean -testcache
+	go test -v ./internal/repository -tags=integration
+
+test-all:
+	@echo "Executando todos os testes..."
+	go test -v ./...
+
+# Comandos de build
+build:
+	@echo "Compilando o projeto..."
+	go build -o server ./cmd/server
+
+# Comandos de limpeza
+clean:
+	@echo "Limpando arquivos de build..."
+	rm -f server
+	go clean -cache
+
+clean-test-cache:
+	@echo "Limpando cache de testes..."
+	go clean -testcache
+
+clean-all: clean clean-test-cache
+	@echo "Limpeza completa concluída!"
+
+# Comandos de dependências
+deps:
+	@echo "Baixando dependências..."
+	go mod download
+	go mod tidy
+
+# Comandos de linting
+lint:
+	@echo "Executando linter..."
+	golangci-lint run
+
+# Comandos de cobertura
+coverage:
+	@echo "Gerando relatório de cobertura..."
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+	@echo "Relatório de cobertura gerado em coverage.html"
+
+# Comandos específicos para o repositório MongoDB
+test-mongo-unit:
+	@echo "Executando testes unitários do repositório MongoDB..."
+	go test -v ./internal/repository -tags=unit
+
+test-mongo-unit-fresh:
+	@echo "Executando testes unitários do repositório MongoDB (sem cache)..."
+	go clean -testcache
+	go test -v ./internal/repository -tags=unit
+
+test-mongo-integration:
+	@echo "Executando testes de integração do repositório MongoDB..."
+	go test -v ./internal/repository -tags=integration
+
+test-mongo-integration-fresh:
+	@echo "Executando testes de integração do repositório MongoDB (sem cache)..."
+	go clean -testcache
+	go test -v ./internal/repository -tags=integration
+
+# Comandos de desenvolvimento
+dev-setup: deps
+	@echo "Configurando ambiente de desenvolvimento..."
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+# Comandos de verificação
+check: lint test
+	@echo "Verificações concluídas com sucesso!"
+
+# Ajuda
+help:
+	@echo "Comandos disponíveis:"
+	@echo "  test              - Executa testes unitários e de integração"
+	@echo "  test-unit         - Executa apenas testes unitários"
+	@echo "  test-unit-fresh   - Executa testes unitários (sem cache)"
+	@echo "  test-integration  - Executa apenas testes de integração"
+	@echo "  test-integration-fresh - Executa testes de integração (sem cache)"
+	@echo "  test-all          - Executa todos os testes do projeto"
+	@echo "  test-mongo-unit   - Executa testes unitários do repositório MongoDB"
+	@echo "  test-mongo-unit-fresh - Executa testes unitários MongoDB (sem cache)"
+	@echo "  test-mongo-integration - Executa testes de integração do repositório MongoDB"
+	@echo "  test-mongo-integration-fresh - Executa testes de integração MongoDB (sem cache)"
+	@echo "  build             - Compila o projeto"
+	@echo "  clean             - Remove arquivos de build"
+	@echo "  clean-test-cache  - Remove cache de testes"
+	@echo "  clean-all         - Remove todos os caches"
+	@echo "  deps              - Baixa e organiza dependências"
+	@echo "  lint              - Executa linter"
+	@echo "  coverage          - Gera relatório de cobertura"
+	@echo "  dev-setup         - Configura ambiente de desenvolvimento"
+	@echo "  check             - Executa lint e testes"
+	@echo "  help              - Mostra esta ajuda" 
