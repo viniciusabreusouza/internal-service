@@ -1,4 +1,4 @@
-.PHONY: test test-unit test-integration test-all build clean
+.PHONY: test test-unit test-integration test-all build clean deps lint coverage dev-setup check help
 
 # Comandos de teste
 test: test-unit test-integration
@@ -68,16 +68,8 @@ help:
 	@echo "Comandos disponíveis:"
 	@echo "  test              - Executa testes unitários e de integração"
 	@echo "  test-unit         - Executa apenas testes unitários"
-	@echo "  test-unit-fresh   - Executa testes unitários (sem cache)"
 	@echo "  test-integration  - Executa apenas testes de integração"
-	@echo "  test-integration-fresh - Executa testes de integração (sem cache)"
 	@echo "  test-all          - Executa todos os testes do projeto"
-	@echo "  test-mongo-unit   - Executa testes unitários do repositório MongoDB"
-	@echo "  test-mongo-unit-fresh - Executa testes unitários MongoDB (sem cache)"
-	@echo "  test-mongo-integration - Executa testes de integração do repositório MongoDB"
-	@echo "  test-mongo-integration-fresh - Executa testes de integração MongoDB (sem cache)"
-	@echo "  test-handlers-integration - Executa testes de integração dos handlers"
-	@echo "  test-handlers-integration-fresh - Executa testes de integração dos handlers (sem cache)"
 	@echo "  build             - Compila o projeto"
 	@echo "  clean             - Remove arquivos de build"
 	@echo "  clean-test-cache  - Remove cache de testes"
