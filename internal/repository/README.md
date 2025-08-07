@@ -72,14 +72,17 @@ make clean-all
 ### Execução Direta com Tags
 
 ```bash
-# Testes unitários
-go test -v ./internal/repository -tags=unit
+# Testes unitários (todo o projeto)
+go test -v ./... -tags=unit
 
-# Testes de integração
+# Testes de integração (apenas repositório)
 go test -v ./internal/repository -tags=integration
 
+# Todos os testes (unit + integration)
+go test -v ./... -tags="unit integration"
+
 # Todos os testes (sem tags)
-go test -v ./internal/repository
+go test -v ./...
 ```
 
 ## Dependências
@@ -125,6 +128,23 @@ Os testes usam build tags para separação:
 
 - **`//go:build unit`**: Testes unitários
 - **`//go:build integration`**: Testes de integração
+
+### Cobertura dos Testes
+
+#### **Testes Unitários (`unit`)**
+- **Domínio**: `internal/domain/user/user_test.go`
+  - Testes de criação de usuário
+  - Testes de atualização de usuário
+  - Testes de validação de dados
+- **Repositório**: `internal/repository/user_mongo_repository_test.go`
+  - Testes de criação com mocks
+  - Testes de cenários de erro
+
+#### **Testes de Integração (`integration`)**
+- **Repositório**: `internal/repository/user_mongo_repository_integration_test.go`
+  - Testes CRUD completos com MongoDB real
+  - Testes de paginação
+  - Testes de cenários de erro com banco real
 
 ### Testes Unitários (`user_mongo_repository_test.go`)
 

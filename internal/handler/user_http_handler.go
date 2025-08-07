@@ -90,7 +90,12 @@ func (h *UserHTTPHandler) GetUser(c *gin.Context) {
 	user, err := h.userService.GetUser(c.Request.Context(), id)
 	if err != nil {
 		h.logger.Error("Failed to get user", zap.Error(err))
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		// Verificar se é um erro de "user not found"
+		if err.Error() == "user not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user"})
+		}
 		return
 	}
 
@@ -166,7 +171,12 @@ func (h *UserHTTPHandler) UpdateUser(c *gin.Context) {
 	user, err := h.userService.UpdateUser(c.Request.Context(), id, req.Name, req.Email)
 	if err != nil {
 		h.logger.Error("Failed to update user", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+		// Verificar se é um erro de "user not found"
+		if err.Error() == "user not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+		}
 		return
 	}
 
@@ -191,7 +201,12 @@ func (h *UserHTTPHandler) DeleteUser(c *gin.Context) {
 
 	if err := h.userService.DeleteUser(c.Request.Context(), id); err != nil {
 		h.logger.Error("Failed to delete user", zap.Error(err))
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+		// Verificar se é um erro de "user not found"
+		if err.Error() == "user not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+		}
 		return
 	}
 

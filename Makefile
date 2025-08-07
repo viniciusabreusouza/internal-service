@@ -5,25 +5,18 @@ test: test-unit test-integration
 
 test-unit:
 	@echo "Executando testes unitários..."
-	go test -v ./internal/repository -tags=unit
-
-test-unit-fresh:
-	@echo "Executando testes unitários (sem cache)..."
 	go clean -testcache
-	go test -v ./internal/repository -tags=unit
+	go test -v ./... -tags=unit
 
 test-integration:
 	@echo "Executando testes de integração..."
-	go test -v ./internal/repository -tags=integration
-
-test-integration-fresh:
-	@echo "Executando testes de integração (sem cache)..."
 	go clean -testcache
-	go test -v ./internal/repository -tags=integration
+	go test -v ./... -tags=integration
 
 test-all:
 	@echo "Executando todos os testes..."
-	go test -v ./...
+	go clean -testcache
+	go test -v ./... -tags="unit integration"
 
 # Comandos de build
 build:
@@ -61,25 +54,6 @@ coverage:
 	go tool cover -html=coverage.out -o coverage.html
 	@echo "Relatório de cobertura gerado em coverage.html"
 
-# Comandos específicos para o repositório MongoDB
-test-mongo-unit:
-	@echo "Executando testes unitários do repositório MongoDB..."
-	go test -v ./internal/repository -tags=unit
-
-test-mongo-unit-fresh:
-	@echo "Executando testes unitários do repositório MongoDB (sem cache)..."
-	go clean -testcache
-	go test -v ./internal/repository -tags=unit
-
-test-mongo-integration:
-	@echo "Executando testes de integração do repositório MongoDB..."
-	go test -v ./internal/repository -tags=integration
-
-test-mongo-integration-fresh:
-	@echo "Executando testes de integração do repositório MongoDB (sem cache)..."
-	go clean -testcache
-	go test -v ./internal/repository -tags=integration
-
 # Comandos de desenvolvimento
 dev-setup: deps
 	@echo "Configurando ambiente de desenvolvimento..."
@@ -102,6 +76,8 @@ help:
 	@echo "  test-mongo-unit-fresh - Executa testes unitários MongoDB (sem cache)"
 	@echo "  test-mongo-integration - Executa testes de integração do repositório MongoDB"
 	@echo "  test-mongo-integration-fresh - Executa testes de integração MongoDB (sem cache)"
+	@echo "  test-handlers-integration - Executa testes de integração dos handlers"
+	@echo "  test-handlers-integration-fresh - Executa testes de integração dos handlers (sem cache)"
 	@echo "  build             - Compila o projeto"
 	@echo "  clean             - Remove arquivos de build"
 	@echo "  clean-test-cache  - Remove cache de testes"
