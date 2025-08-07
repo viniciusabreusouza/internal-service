@@ -14,8 +14,12 @@ import (
 )
 
 func TestUserMongoRepository_Integration_Create(t *testing.T) {
-	container, client := integration.StartMongoContainer(t)
-	defer integration.CleanupMongoContainer(t, container, client)
+	client, cleanup := integration.StartSharedMongoContainer(t)
+	defer cleanup()
+
+	// Limpar banco antes do teste
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	db := integration.GetTestDatabase(client)
 	repo := NewUserMongoRepository(db)
@@ -38,8 +42,12 @@ func TestUserMongoRepository_Integration_Create(t *testing.T) {
 }
 
 func TestUserMongoRepository_Integration_GetByID(t *testing.T) {
-	container, client := integration.StartMongoContainer(t)
-	defer integration.CleanupMongoContainer(t, container, client)
+	client, cleanup := integration.StartSharedMongoContainer(t)
+	defer cleanup()
+
+	// Limpar banco antes do teste
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	db := integration.GetTestDatabase(client)
 	repo := NewUserMongoRepository(db)
@@ -67,8 +75,12 @@ func TestUserMongoRepository_Integration_GetByID(t *testing.T) {
 }
 
 func TestUserMongoRepository_Integration_Update(t *testing.T) {
-	container, client := integration.StartMongoContainer(t)
-	defer integration.CleanupMongoContainer(t, container, client)
+	client, cleanup := integration.StartSharedMongoContainer(t)
+	defer cleanup()
+
+	// Limpar banco antes do teste
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	db := integration.GetTestDatabase(client)
 	repo := NewUserMongoRepository(db)
@@ -107,8 +119,12 @@ func TestUserMongoRepository_Integration_Update(t *testing.T) {
 }
 
 func TestUserMongoRepository_Integration_Delete(t *testing.T) {
-	container, client := integration.StartMongoContainer(t)
-	defer integration.CleanupMongoContainer(t, container, client)
+	client, cleanup := integration.StartSharedMongoContainer(t)
+	defer cleanup()
+
+	// Limpar banco antes do teste
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	db := integration.GetTestDatabase(client)
 	repo := NewUserMongoRepository(db)
@@ -138,8 +154,12 @@ func TestUserMongoRepository_Integration_Delete(t *testing.T) {
 }
 
 func TestUserMongoRepository_Integration_GetAll(t *testing.T) {
-	container, client := integration.StartMongoContainer(t)
-	defer integration.CleanupMongoContainer(t, container, client)
+	client, cleanup := integration.StartSharedMongoContainer(t)
+	defer cleanup()
+
+	// Limpar banco antes do teste
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	db := integration.GetTestDatabase(client)
 	repo := NewUserMongoRepository(db)
@@ -176,8 +196,12 @@ func TestUserMongoRepository_Integration_GetAll(t *testing.T) {
 }
 
 func TestUserMongoRepository_Integration_CRUD_Operations(t *testing.T) {
-	container, client := integration.StartMongoContainer(t)
-	defer integration.CleanupMongoContainer(t, container, client)
+	client, cleanup := integration.StartSharedMongoContainer(t)
+	defer cleanup()
+
+	// Limpar banco antes do teste
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	db := integration.GetTestDatabase(client)
 	repo := NewUserMongoRepository(db)

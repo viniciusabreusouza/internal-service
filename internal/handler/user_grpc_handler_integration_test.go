@@ -22,8 +22,9 @@ import (
 
 // setupTestGRPCHandler cria um handler gRPC de teste com dependências reais
 func setupTestGRPCHandler(t *testing.T) (*UserGRPCHandler, *mongo.Client) {
-	// Iniciar container MongoDB
-	_, client := integration.StartMongoContainer(t)
+	// Iniciar container MongoDB compartilhado
+	client, cleanup := integration.StartSharedMongoContainer(t)
+	defer cleanup()
 
 	// Configurar repositório
 	db := integration.GetTestDatabase(client)
@@ -40,8 +41,12 @@ func setupTestGRPCHandler(t *testing.T) (*UserGRPCHandler, *mongo.Client) {
 }
 
 func TestUserGRPCHandler_Integration_CreateUser(t *testing.T) {
-	handler, client := setupTestGRPCHandler(t)
-	defer integration.CleanupMongoContainer(t, nil, client)
+	handler, _ := setupTestGRPCHandler(t)
+
+	// Limpar banco antes do teste
+	client, _ := integration.StartSharedMongoContainer(t)
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	ctx := context.Background()
 
@@ -109,8 +114,12 @@ func TestUserGRPCHandler_Integration_CreateUser(t *testing.T) {
 }
 
 func TestUserGRPCHandler_Integration_GetUser(t *testing.T) {
-	handler, client := setupTestGRPCHandler(t)
-	defer integration.CleanupMongoContainer(t, nil, client)
+	handler, _ := setupTestGRPCHandler(t)
+
+	// Limpar banco antes do teste
+	client, _ := integration.StartSharedMongoContainer(t)
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	ctx := context.Background()
 
@@ -183,8 +192,12 @@ func TestUserGRPCHandler_Integration_GetUser(t *testing.T) {
 }
 
 func TestUserGRPCHandler_Integration_ListUsers(t *testing.T) {
-	handler, client := setupTestGRPCHandler(t)
-	defer integration.CleanupMongoContainer(t, nil, client)
+	handler, _ := setupTestGRPCHandler(t)
+
+	// Limpar banco antes do teste
+	client, _ := integration.StartSharedMongoContainer(t)
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	ctx := context.Background()
 

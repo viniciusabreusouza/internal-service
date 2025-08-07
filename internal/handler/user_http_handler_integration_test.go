@@ -28,8 +28,9 @@ func setupTestServer(t *testing.T) (*gin.Engine, *mongo.Client) {
 	// Configurar Gin para modo de teste
 	gin.SetMode(gin.TestMode)
 
-	// Iniciar container MongoDB
-	_, client := integration.StartMongoContainer(t)
+	// Iniciar container MongoDB compartilhado
+	client, cleanup := integration.StartSharedMongoContainer(t)
+	defer cleanup()
 
 	// Configurar repositório
 	db := integration.GetTestDatabase(client)
@@ -60,8 +61,12 @@ func setupTestServer(t *testing.T) (*gin.Engine, *mongo.Client) {
 }
 
 func TestUserHTTPHandler_Integration_CreateUser(t *testing.T) {
-	router, client := setupTestServer(t)
-	defer integration.CleanupMongoContainer(t, nil, client)
+	router, _ := setupTestServer(t)
+
+	// Limpar banco antes do teste
+	client, _ := integration.StartSharedMongoContainer(t)
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	tests := []struct {
 		name           string
@@ -145,8 +150,12 @@ func TestUserHTTPHandler_Integration_CreateUser(t *testing.T) {
 }
 
 func TestUserHTTPHandler_Integration_GetUser(t *testing.T) {
-	router, client := setupTestServer(t)
-	defer integration.CleanupMongoContainer(t, nil, client)
+	router, _ := setupTestServer(t)
+
+	// Limpar banco antes do teste
+	client, _ := integration.StartSharedMongoContainer(t)
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	// Criar um usuário primeiro
 	user, err := user.NewUser("Test User", "test@example.com")
@@ -213,8 +222,12 @@ func TestUserHTTPHandler_Integration_GetUser(t *testing.T) {
 }
 
 func TestUserHTTPHandler_Integration_ListUsers(t *testing.T) {
-	router, client := setupTestServer(t)
-	defer integration.CleanupMongoContainer(t, nil, client)
+	router, _ := setupTestServer(t)
+
+	// Limpar banco antes do teste
+	client, _ := integration.StartSharedMongoContainer(t)
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	// Criar múltiplos usuários
 	db := integration.GetTestDatabase(client)
@@ -274,8 +287,12 @@ func TestUserHTTPHandler_Integration_ListUsers(t *testing.T) {
 }
 
 func TestUserHTTPHandler_Integration_UpdateUser(t *testing.T) {
-	router, client := setupTestServer(t)
-	defer integration.CleanupMongoContainer(t, nil, client)
+	router, _ := setupTestServer(t)
+
+	// Limpar banco antes do teste
+	client, _ := integration.StartSharedMongoContainer(t)
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	// Criar um usuário primeiro
 	testUser, err := user.NewUser("Original User", "original@example.com")
@@ -363,8 +380,12 @@ func TestUserHTTPHandler_Integration_UpdateUser(t *testing.T) {
 }
 
 func TestUserHTTPHandler_Integration_DeleteUser(t *testing.T) {
-	router, client := setupTestServer(t)
-	defer integration.CleanupMongoContainer(t, nil, client)
+	router, _ := setupTestServer(t)
+	
+	// Limpar banco antes do teste
+	client, _ := integration.StartSharedMongoContainer(t)
+	err := integration.CleanupTestDatabase(client)
+	require.NoError(t, err)
 
 	// Criar um usuário primeiro
 	testUser, err := user.NewUser("Test User", "test@example.com")
